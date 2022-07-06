@@ -1,10 +1,3 @@
-# New World War Bot
-
-New World War Bot is a DiscordBot assisting in wars by calling respawn waves.
-
-## Setup
-
-Use the following [link](https://discord.com/oauth2/authorize?client_id=962099365672001586&permissions=3155968&scope=bot) to setup the bot.
 
 ## Usage
 ### Basics
