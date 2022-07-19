@@ -1,7 +1,7 @@
 {
-  "name": "discrodbot",
+  "name": "ZooBotWar",
   "version": "1.0.0",
-  "description": "discordbot",
+  "description": "ZooBotWar",
   "main": "main.js",
   "scripts": {
 	"start": "node src/main.js",
