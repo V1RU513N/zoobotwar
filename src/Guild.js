@@ -2,7 +2,8 @@ const { createAudioPlayer, NoSubscriberBehavior, getVoiceConnection, createAudio
 const help = require("./help");
 const { splitArgs, validateTimeArgs, getRandomLeaveFile, millisToCETString, validateTimeArgsMinuteSeconds, isInt, extractCallRate, timeStringToMillis } = require("./utils");
 const { War } = require("./War");
-const guildService = require("./guildService")
+const guildService = require("./guildService");
+const { Permissions } = require("discord.js");
 
 class Guild {
 
@@ -51,6 +52,13 @@ class Guild {
         this.getFirstChannelFromName(this.warChannel).then((warChannel) => {
             if (warChannel) {
                 if (warChannel.type === 'GUILD_VOICE') {
+                    if(!warChannel.permissionsFor(msg.guild.me).has([
+                        Permissions.FLAGS.SPEAK,
+                        Permissions.FLAGS.CONNECT,
+                    ])) {
+                        msg.reply(`Missing permissions to speak and/or join in ${this.warChannel}`)
+                        return;
+                    }
                     this.scheduleWar(msg, args);
                 } else {
                     msg.reply("Channel " + this.warChannel + " is not a voice channel")
@@ -67,6 +75,13 @@ class Guild {
         this.getFirstChannelFromName(this.warChannel).then((warChannel) => {
             if (warChannel) {
                 if (warChannel.type === 'GUILD_VOICE') {
+                    if(!warChannel.permissionsFor(msg.guild.me).has([
+                        Permissions.FLAGS.SPEAK,
+                        Permissions.FLAGS.CONNECT,
+                    ])) {
+                        msg.reply(`Missing permissions to speak and/or join in ${this.warChannel}`)
+                        return;
+                    }
                     this.startWar(msg, args);
                 } else {
                     msg.reply("Channel " + this.warChannel + " is not a voice channel")
@@ -91,9 +106,8 @@ class Guild {
         }
         const current = new Date()
         const warStartMillis = new Date(current.getFullYear(), current.getMonth(), current.getDate(), current.getHours(), current.getMinutes() + parseInt(timeArgs[0]), current.getSeconds() + parseInt(timeArgs[1])).getTime();
-        const collidingTimers = [...this.startTimerWarMap.keys()].filter(time => Math.abs(time - warStartMillis) < 1000 * 60 * 30 + this.preJoinTimer * 1000).length != 0
-        if (collidingTimers) {
-            msg.reply(args[0] + " collides with a different war. Use !list and !unscheduleWar unwanted wars.")
+        if (this.checkForCollidingTimers(warStartMillis)) {
+            msg.reply(args[0] + " collides with a different war. !leaveWar the current war or use !list and !unscheduleWar unwanted wars.")
             return;
         }
         const war = new War(this, msg, warStartMillis, this.startCallback, this.leaveCallback);
@@ -111,15 +125,20 @@ class Guild {
         if (!warStartMillis) {
             msg.reply(`${args[0]} is not a valid time.`)
         }
-        const collidingTimers = [...this.startTimerWarMap.keys()].filter(time => Math.abs(time - warStartMillis) < 1000 * 60 * 30 + this.preJoinTimer * 1000).length != 0
-        if (collidingTimers) {
-            msg.reply(args[0] + " collides with a different war. Use !list and !unscheduleWar unwanted wars.")
+        if (this.checkForCollidingTimers(warStartMillis)) {
+            msg.reply(args[0] + " collides with a different war. !leaveWar the curent war or use !list and !unscheduleWar unwanted wars.")
             return;
         }
         const war = new War(this, msg, warStartMillis, this.startCallback, this.leaveCallback);
         this.startTimerWarMap.set(warStartMillis, war);
         this.incrementWars();
         msg.reply("The war has been scheduled for " + args[0])
+    }
+
+    checkForCollidingTimers(warStartMillis){
+        const collidingTimers = [...this.startTimerWarMap.keys()].filter(time => Math.abs(time - warStartMillis) < 1000 * 60 * 30 + this.preJoinTimer * 1000).length != 0
+        const currentWarColliding = this.activeWar ? Math.abs(this.activeWar.warStart - warStartMillis) < 1000 * 60 * 30 + this.preJoinTimer * 1000 : false;
+        return collidingTimers || currentWarColliding;
     }
 
     startCallback = (war) => {
@@ -132,7 +151,7 @@ class Guild {
     }
 
     leaveCallback = () => {
-        this.activeWar = null;
+        this.activeWar = undefined;
         var con = getVoiceConnection(this.id);
         if (con) {
             this.playFile(getRandomLeaveFile())
@@ -237,9 +256,10 @@ class Guild {
             }
             case 'preJoinTimer': {
                 if (isInt(args[1])) {
-                    this[args[0]] = args[1];
+                    const argument = parseInt(args[1]);
+                    this[args[0]] = argument;
                     guildService.save(this)
-                    msg.reply("preJoinTimer (in Seconds) has been changed to " + args[1]);
+                    msg.reply("preJoinTimer (in Seconds) has been changed to " + argument);
                 } else {
                     msg.reply(args[1] + " is not an integer");
 
@@ -267,9 +287,10 @@ class Guild {
             }
             case 'firstCallTimer': {
                 if (isInt(args[1])) {
-                    this[args[0]] = args[1];
+                    const argument = parseInt(args[1]);
+                    this[args[0]] = argument;
                     guildService.save(this)
-                    msg.reply("firstCallTimer (in Seconds) has been changed to " + args[1]);
+                    msg.reply("firstCallTimer (in Seconds) has been changed to " + argument);
                 } else {
                     msg.reply(args[1] + " is not an integer");
 
@@ -299,7 +320,14 @@ class Guild {
 
     dispatch(msg) {
         if (msg.channel.name === this.channelName) {
+            if(!msg.channel.permissionsFor(msg.guild.me).has([
+                    Permissions.FLAGS.SEND_MESSAGES,
+                    Permissions.FLAGS.MANAGE_MESSAGES,
+                ])) {
+                    return;
+                }
             if (msg.content.startsWith("!")) {
+                console.log(msg.content)
                 const args = splitArgs(msg.content)
                 switch (args[0].substr(1)) {
                     case "scheduleWar":
@@ -335,6 +363,13 @@ class Guild {
     }
 
     interact(interaction) {
+        if (interaction.channel.name !== this.channelName) return;
+        if(!interaction.channel.permissionsFor(interaction.guild.me).has([
+            Permissions.FLAGS.SEND_MESSAGES,
+            Permissions.FLAGS.MANAGE_MESSAGES,
+        ])) {
+            return;
+        }
         const args = interaction.values[0].split("_");
         switch (args[0]) {
             case "scheduling":
@@ -375,7 +410,7 @@ function buildSettingsDescriptorMap() {
         },
         {
             name: "callRate",
-            value: "5 10 15",
+            value: "\"5 10 15\"",
             description: "List of seconds before the bot calls for respawn waves."
         },
         {
