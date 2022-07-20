@@ -39,7 +39,7 @@ Settings can be viewed by:
 ##### warChannel
 - War Channel the bot joins on war. Make sure that the bot has access to join that channel.
 - Example: `!settings set warChannel "test-channel"`
-- Default value: "war-bot"
+- Default value: "war-channel"
 ##### preJoinTimer
 - Time in seconds before the bot joins the voice channel.
 - Example: `!settings set preJoinTimer 300`
