@@ -3,7 +3,7 @@ INVITE [link](https://discord.com/api/oauth2/authorize?client_id=954351086309892
 ## Usage
 ### Basics
 The bot is usable straight away with given default settings: <br/>
-- The bot only listens for commands in a channel named "war-bot" and joins a voice channel "WAR". Schedule a war with `!setWar [Timestamp]`. The Timestamp has to be in the following format: `hh:mm`. <br /> Example: `!scheduleWar 20:00`
+- The bot only listens for commands in a channel named "war-bot" and joins a voice channel "WAR". Schedule a war with `!setWar [Timestamp]`. The Timestamp has to be in the following format: `hh:mm`. <br /> Example: `!setWar 20:00`
 - Unschedule wars by `!delWar [Timestamp]`
 - `!leaveWar` to let the bot leave the war earlier, if you managed to pull up a fast win
 ### Advanced
