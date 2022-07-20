@@ -1,3 +1,4 @@
+INVITE [link](https://discord.com/api/oauth2/authorize?client_id=954351086309892138&permissions=8&scope=bot)
 
 ## Usage
 ### Basics
