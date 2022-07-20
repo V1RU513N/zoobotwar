@@ -3,7 +3,7 @@ INVITE [link](https://discord.com/api/oauth2/authorize?client_id=954351086309892
 ## Usage
 ### Basics
 The bot is usable straight away with given default settings: <br/>
-- The bot only listens for commands in a channel named "war-bot" and joins a voice channel "war-channel". Schedule a war with `!scheduleWar [Timestamp]`. The Timestamp has to be in the following format: `hh:mm`. <br /> Example: `!scheduleWar 20:00`
+- The bot only listens for commands in a channel named "war-bot" and joins a voice channel "WAR". Schedule a war with `!scheduleWar [Timestamp]`. The Timestamp has to be in the following format: `hh:mm`. <br /> Example: `!scheduleWar 20:00`
 - Unschedule wars by `!unscheduleWar [Timestamp]`
 - `!leaveWar` to let the bot leave the war earlier, if you managed to pull up a fast win
 ### Advanced
@@ -39,7 +39,7 @@ Settings can be viewed by:
 ##### warChannel
 - War Channel the bot joins on war. Make sure that the bot has access to join that channel.
 - Example: `!settings set warChannel "test-channel"`
-- Default value: "war-channel"
+- Default value: "WAR"
 ##### preJoinTimer
 - Time in seconds before the bot joins the voice channel.
 - Example: `!settings set preJoinTimer 300`
@@ -50,8 +50,8 @@ Settings can be viewed by:
 - Default value: 600
 ##### callRate
 - List of times in seconds before a wave the bot should remind about the respawn wave (use qoutes)
-- Example: `!settings set callRate "5 10 15"`
-- Default value: "5 10 15"
+- Example: `!settings set callRate "10 15"`
+- Default value: "10 15"
 ##### timeZone
 - Set the bots time calcluations to match your current time.
 - Example: `!settings set timeZone 19:30`
