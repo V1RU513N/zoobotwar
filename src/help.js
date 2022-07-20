@@ -95,7 +95,7 @@ function helpScheduling(interaction) {
         .setTitle("Scheduling")
         .addFields([
             {
-                name: `\`!scheduleWar <HH:MM>\``,
+                name: `\`!setWar <HH:MM>\``,
                 value: 'Schedule a war at given time (HH:MM).',
             },
             {
@@ -111,7 +111,7 @@ function helpScheduling(interaction) {
                 value: 'List all scheduled wars',
             },
             {
-                name: `\`!unscheduleWar <HH:MM>\``,
+                name: `\`!delWar <HH:MM>\``,
                 value: 'Unschedule a war at time (HH:MM) specified by \`!list\`.',
             },
         ])

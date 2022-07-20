@@ -330,7 +330,7 @@ class Guild {
                 console.log(msg.content)
                 const args = splitArgs(msg.content)
                 switch (args[0].substr(1)) {
-                    case "scheduleWar":
+                    case "setWar":
                         this.handleScheduleWar(msg, args.slice(1));
                         break;
                     case "startWar":
@@ -345,7 +345,7 @@ class Guild {
                     case "help":
                         this.handleHelp(msg);
                         break;
-                    case "unscheduleWar":
+                    case "delWar":
                         this.handleRemoveSchedule(msg, args.slice(1));
                         break;
                     case "list":
